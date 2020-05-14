@@ -1,0 +1,12 @@
+{
+  "name": "@ryanburnette/url-path-to-local-path",
+  "version": "2.0.0",
+  "description": "Given a requested URL path, return a present and safe local path.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanburnette/url-path-to-local-path.git"
+  },
+  "author": "Ryan Burnette <ryan.burnette@gmail.com> (https://ryanburnette.com)",
+  "license": "ISC"
+}
