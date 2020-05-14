@@ -1,4 +1,4 @@
-# @ryanburnette/[url-path-to-local-path][1]
+# [url-path-to-local-path](https://github.com/ryanburnette/url-path-to-local-path)
 
 [![repo](https://img.shields.io/badge/repository-Github-black.svg?style=flat-square)](https://github.com/ryanburnette/url-path-to-local-path)
 [![npm](https://img.shields.io/badge/package-NPM-green.svg?style=flat-square)](https://www.npmjs.com/package/@ryanburnette/url-path-to-local-path)
@@ -53,5 +53,3 @@ tested. The first match wins.
 ```javascript
 options.localExtensions = ['.html', '.ejs'];
 ```
-
-[1]: https://github.com/ryanburnette/url-path-to-local-path
