@@ -1,5 +1,8 @@
 # @ryanburnette/[url-path-to-local-path][1]
 
+[![repo](https://img.shields.io/badge/repository-Github-black.svg?style=flat-square)](https://github.com/ryanburnette/url-path-to-local-path)
+[![npm](https://img.shields.io/badge/package-NPM-green.svg?style=flat-square)](https://www.npmjs.com/package/@ryanburnette/url-path-to-local-path)
+
 Given a requested URL path, return a present and safe local path.
 
 - consistent behavior with `/foo` and `/foo/` etc
@@ -8,25 +11,26 @@ Given a requested URL path, return a present and safe local path.
 - able to set a different extension for local file
 - able to test for a series of local extensions
 - protects from path traversal
+- there should only be one match, the universe might break if there is more than
+  one correct answer
 
 ## Usage
 
 ```js
-var UrlPathToLocalPath = require('@ryanburnette/url-path-to-local-path');
-
-var options = {
+var getLocalPath = require('@ryanburnette/url-path-to-local-path')({
   context: './content/',
-  localExtension: '.ejs'
-};
-
-var getLocalPath = UrlPathToLocalPath(options);
+  localExtension: '.ejs' // or use localExtensions with an Array to try multiple
+});
 
 // Express middleware example
-module.exports = function(req, res, next) {
-  getLocalPath(req.path).then(function(localPath) {
-    // do your thing
-  next();
-  })
+module.exports = function (req, res, next) {
+  getLocalPath(req.path).then(function (localPath) {
+    if (localPath) {
+      // do your thing
+      return;
+    }
+    next();
+  });
 };
 ```
 
