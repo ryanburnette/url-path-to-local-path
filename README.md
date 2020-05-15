@@ -3,53 +3,48 @@
 [![repo](https://img.shields.io/badge/repository-Github-black.svg?style=flat-square)](https://github.com/ryanburnette/url-path-to-local-path)
 [![npm](https://img.shields.io/badge/package-NPM-green.svg?style=flat-square)](https://www.npmjs.com/package/@ryanburnette/url-path-to-local-path)
 
-Given a requested URL path, return a present and safe local path.
+Safely convert `req.path` into a local path.
 
-- consistent behavior with `/foo` and `/foo/` etc
-- consistent behavior with `/foo` finding `/foo.html` etc
-- checks for existence of local file
-- able to set a different extension for local file
-- able to test for a series of local extensions
-- protects from path traversal
-- there should only be one match, the universe might break if there is more than
-  one correct answer
+## Goals
+
+- Consistent behavior with `/foo` and `/foo/`
+- Consistent behavior with `/foo` finding `/foo.html`
+- Check for existence of the file
+- Set a different extension for local file, req.path might be `index.html` while
+  local file is `index.md`
+- Option to test for a series of local extensions `['.md', '.html']`
+- Protect from path traversal
 
 ## Usage
 
 ```js
-var getLocalPath = require('@ryanburnette/url-path-to-local-path')({
-  context: './content/',
-  localExtension: '.ejs' // or use localExtensions with an Array to try multiple
+var UrlPathToLocalPath = require('@ryanburnette/url-path-to-local-path');
+
+var getLocalPath = UrlPathToLocalPath({
+  context: './content/', // where is the content?
+  localExtension: '.ejs' // or use localExtensions with an Array to try multiple extensions
 });
 
 // Express middleware example
 module.exports = function (req, res, next) {
-  getLocalPath(req.path).then(function (localPath) {
-    if (localPath) {
-      // do your thing
-      return;
-    }
-    next();
-  });
+  getLocalPath(req.path)
+    .then(function (localPath) {
+      return fs.promises.readFile(localPath, 'utf8');
+    })
+    .then(function (html) {
+      res.send(html);
+    })
+    // throws an error if no local path found, we'll catch that
+    .catch(function (error) {
+      next();
+    });
 };
 ```
 
 ## Options
 
-### Context
-
-Set `options.context` working directory for content.
-
-### Local Extension
-
-Set `options.localExtension` if the local files have a different extension such
-as `.ejs`.
-
-### Local Extensions
-
-Set `options.localExtensions` to an array if multiple extensions should be
-tested. The first match wins.
-
-```javascript
-options.localExtensions = ['.html', '.ejs'];
-```
+- `context` Working directory for content.
+- `localExtension` If the local files have a different extension such as `.md`
+  or `.ejs`
+- `localExtensions` Use this with an array if multiple extensions should be
+  tested

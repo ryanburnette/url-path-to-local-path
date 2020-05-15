@@ -1,24 +1,11 @@
 'use strict';
 
-var path = require('path');
 var fs = require('fs');
-var removeQuery = require('./lib/remove-query');
-var removeTrailingSlash = require('./lib/remove-trailing-slash');
-var replaceExtension = require('./lib/replace-extension');
-var dirWithIndex = require('./lib/dir-with-index');
+var path = require('path');
+var url = require('url');
 
-module.exports = function (opts) {
-  if (!opts) {
-    opts = {};
-  }
-
-  if (!Object.keys(opts).includes('context')) {
-    opts.context = './content';
-  }
-
-  if (!Object.keys(opts).includes('checkExists')) {
-    opts.checkExists = true;
-  }
+module.exports = function (opts = {}) {
+  opts.context = opts.context || './content';
 
   var localExtensions = opts.localExtension || opts.localExtensions || '.html';
 
@@ -56,28 +43,57 @@ module.exports = function (opts) {
       return Promise.resolve(false);
     }
 
-    var pathsToTry = localExtensions
-      .map(function (lext) {
-        var tryFile = replaceExtension(reqPath, lext);
-        return [tryFile, dirWithIndex(tryFile)];
-      })
-      .flat();
-
     return Promise.all(
-      pathsToTry.map(function (fn) {
-        return fs.promises
-          .stat(fn)
-          .then(function (stat) {
-            return fn;
-          })
-          .catch(function (error) {
-            return false;
-          });
-      })
-    ).then(function (attempts) {
-      return attempts.find(function (el) {
-        return el;
-      });
+      localExtensions
+        .map(function (lext) {
+          var tryFile = replaceExtension(reqPath, lext);
+          return [tryFile, dirWithIndex(tryFile)];
+        })
+        .flat()
+        .map(function (fn) {
+          return fs.promises
+            .stat(fn)
+            .then(() => fn)
+            .catch(() => false);
+        })
+    ).then(function (checks) {
+      var found = checks.find(el => el);
+      if (!found) {
+        var e1 = new Error('local path not found');
+        e1.code = 'ENOENT';
+        throw e1;
+      }
+      return found;
     });
   };
 };
+
+function removeQuery(theUrl) {
+  var obj = url.parse(theUrl);
+  obj.search = obj.query = '';
+  return url.format(obj);
+}
+
+function removeTrailingSlash(str) {
+  return str.replace(/[\\/]+$/, '');
+}
+
+function replaceExtension(pth, ext) {
+  if (typeof pth !== 'string') {
+    pth = String(pth);
+  }
+  if (pth.length === 0) {
+    return pth;
+  }
+  var fileName = path.basename(pth, path.extname(pth)) + ext;
+  return path.join(path.dirname(pth), fileName);
+}
+
+function dirWithIndex(s) {
+  s = String(s);
+  return (
+    s.substring(0, s.lastIndexOf('.')) +
+    '/index' +
+    s.substring(s.lastIndexOf('.'))
+  );
+}

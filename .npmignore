@@ -1,2 +1,2 @@
-content/
-*.test.js
+index.test.js
+test/
