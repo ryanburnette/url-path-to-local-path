@@ -26,7 +26,7 @@ module.exports = function (opts) {
     localExtensions = [localExtensions];
   }
 
-  return function (reqPath) {
+  return async function (reqPath) {
     reqPath = removeQuery(reqPath);
 
     if (reqPath == '/') {
@@ -53,7 +53,7 @@ module.exports = function (opts) {
     reqPath = path.resolve(reqPath);
 
     if (!reqPath.startsWith(path.resolve(opts.context))) {
-      return null;
+      return Promise.resolve(false);
     }
 
     var pathsToTry = localExtensions
@@ -71,7 +71,7 @@ module.exports = function (opts) {
             return fn;
           })
           .catch(function (error) {
-            return null;
+            return false;
           });
       })
     ).then(function (attempts) {

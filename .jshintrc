@@ -1,7 +1,7 @@
 {
   "node": true,
+  "esversion": 8,
   "globals": {
-    "Promise": true,
     "test": true,
     "expect": true
   }

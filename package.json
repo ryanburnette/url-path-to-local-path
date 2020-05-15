@@ -1,6 +1,6 @@
 {
   "name": "@ryanburnette/url-path-to-local-path",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Given a requested URL path, return a present and safe local path.",
   "main": "index.js",
   "repository": {
