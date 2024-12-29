@@ -1,50 +1,62 @@
-# [url-path-to-local-path](https://github.com/ryanburnette/url-path-to-local-path)
+# url-path-to-local-path
 
-[![repo](https://img.shields.io/badge/repository-Github-black.svg?style=flat-square)](https://github.com/ryanburnette/url-path-to-local-path)
-[![npm](https://img.shields.io/badge/package-NPM-green.svg?style=flat-square)](https://www.npmjs.com/package/@ryanburnette/url-path-to-local-path)
+Safely convert `req.path` into a local file path.
 
-Safely convert `req.path` into a local path.
+## Features
 
-## Goals
+- Consistent handling of `/foo` and `/foo/`
+- Resolves `/foo` to `/foo.html` or `/foo/index.html`
+- Checks if the resolved file exists
+- Supports custom file extensions (e.g., `.html`)
+- Protects against path traversal
 
-- Consistent behavior with `/foo` and `/foo/`
-- Consistent behavior with `/foo` finding `/foo.html`
-- Check for existence of the file
-- Set a different extension for local file, req.path might be `index.html` while
-  local file is `index.md`
-- Option to test for a series of local extensions `['.md', '.html']`
-- Protect from path traversal
+## Installation
+
+```bash
+npm install @ryanburnette/url-path-to-local-path
+```
 
 ## Usage
 
-```js
-var UrlPathToLocalPath = require('@ryanburnette/url-path-to-local-path');
+```javascript
+import UrlPathToLocalPath from '@ryanburnette/url-path-to-local-path';
+import fs from 'fs/promises';
 
-var getLocalPath = UrlPathToLocalPath({
-  context: './content/', // where is the content?
-  localExtension: '.ejs' // or use localExtensions with an Array to try multiple extensions
+const resolvePath = UrlPathToLocalPath.create({
+  workDir: './content',
+  extension: '.html'
 });
 
-// Express middleware example
-module.exports = function (req, res, next) {
-  getLocalPath(req.path)
-    .then(function (localPath) {
-      return fs.promises.readFile(localPath, 'utf8');
-    })
-    .then(function (html) {
-      res.send(html);
-    })
-    // throws an error if no local path found, we'll catch that
-    .catch(function (error) {
-      next();
-    });
-};
+// Example: Resolving a path and reading the file
+const localPath = await resolvePath('/foo');
+const content = await fs.readFile(localPath, 'utf8');
 ```
 
-## Options
+## API
 
-- `context` Working directory for content.
-- `localExtension` If the local files have a different extension such as `.md`
-  or `.ejs`
-- `localExtensions` Use this with an array if multiple extensions should be
-  tested
+### \`UrlPathToLocalPath.create(options)\`
+
+- \`workDir\` (required): The directory to resolve paths within.
+- \`extension\` (required): The file extension to resolve, e.g., \`.html\`.
+
+## Example with Express
+
+```javascript
+import UrlPathToLocalPath from '@ryanburnette/url-path-to-local-path';
+import fs from 'fs/promises';
+
+const resolvePath = UrlPathToLocalPath.create({
+  workDir: './content',
+  extension: '.html'
+});
+
+export default async function (req, res, next) {
+  try {
+    const localPath = await resolvePath(req.path);
+    const content = await fs.readFile(localPath, 'utf8');
+    res.send(content);
+  } catch (err) {
+    next();
+  }
+}
+```
