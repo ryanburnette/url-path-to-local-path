@@ -1,7 +1,7 @@
 {
   "name": "@ryanburnette/url-path-to-local-path",
-  "version": "3.0.0",
-  "description": "Safely convert req.path into a local path.",
+  "version": "4.0.0",
+  "description": "Safely convert `req.path` into a local file path.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -9,7 +9,13 @@
   },
   "author": "Ryan Burnette <ryan.burnette@gmail.com> (https://ryanburnette.com)",
   "license": "ISC",
-  "engines": {
-    "node": ">=10"
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jshint": "^2.13.6",
+    "prettier": "^3.4.2"
   }
 }
