@@ -1,6 +1,6 @@
 {
   "name": "@ryanburnette/url-path-to-local-path",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Safely convert `req.path` into a local file path.",
   "main": "index.js",
   "repository": {
