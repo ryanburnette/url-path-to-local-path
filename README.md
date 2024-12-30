@@ -23,7 +23,7 @@ import UrlPathToLocalPath from '@ryanburnette/url-path-to-local-path';
 import fs from 'fs/promises';
 
 const resolvePath = UrlPathToLocalPath.create({
-  workDir: './content',
+  directory: './content',
   extension: '.html'
 });
 
@@ -36,7 +36,7 @@ const content = await fs.readFile(localPath, 'utf8');
 
 ### \`UrlPathToLocalPath.create(options)\`
 
-- \`workDir\` (required): The directory to resolve paths within.
+- \`directory\` (required): The directory to resolve paths within.
 - \`extension\` (required): The file extension to resolve, e.g., \`.html\`.
 
 ## Example with Express
@@ -46,7 +46,7 @@ import UrlPathToLocalPath from '@ryanburnette/url-path-to-local-path';
 import fs from 'fs/promises';
 
 const resolvePath = UrlPathToLocalPath.create({
-  workDir: './content',
+  directory: './content',
   extension: '.html'
 });
 

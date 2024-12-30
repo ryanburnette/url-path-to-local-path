@@ -5,7 +5,7 @@ const fixturesDir = path.resolve('tests/fixtures');
 
 describe('UrlPathToLocalPath', () => {
   const resolvePath = UrlPathToLocalPath.create({
-    workDir: fixturesDir,
+    directory: fixturesDir,
     extension: '.html'
   });
 

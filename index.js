@@ -11,30 +11,30 @@ const UrlPathToLocalPath = {};
 /**
  * Creates a function to resolve URL paths to local file paths.
  * @param {Object} opts - Options object.
- * @param {string} opts.workDir - The working directory where files are located.
+ * @param {string} opts.directory - The working directory where files are located.
  * @param {string} opts.extension - The file extension to use (e.g., ".html").
  * @returns {Function} A function that takes a URL path and resolves it to a local file path.
- * @throws {Error} If `opts.workDir` or `opts.extension` are not provided.
+ * @throws {Error} If `opts.directory` or `opts.extension` are not provided.
  * @throws {PathNotFoundError} If no valid local path is found for the given URL path.
  */
 UrlPathToLocalPath.create = function (opts = {}) {
-  if (!opts.workDir) throw new Error('opts.workDir is required');
+  if (!opts.directory) throw new Error('opts.directory is required');
   if (!opts.extension) throw new Error('opts.extension is required');
 
-  const workDir = path.resolve(opts.workDir);
+  const directory = path.resolve(opts.directory);
   const extension = opts.extension;
 
   return async function resolveUrlPathToLocalPath(urlPath) {
     urlPath = normalizeUrlPath(urlPath, extension);
 
     const possiblePaths = [
-      path.resolve(workDir, ...urlPath.split('/')),
-      path.resolve(workDir, ...urlPath.split('/')) + extension,
-      path.resolve(workDir, ...urlPath.split('/').filter(Boolean), `index${extension}`)
+      path.resolve(directory, ...urlPath.split('/')),
+      path.resolve(directory, ...urlPath.split('/')) + extension,
+      path.resolve(directory, ...urlPath.split('/').filter(Boolean), `index${extension}`)
     ];
 
     for (const resolvedPath of possiblePaths) {
-      if (resolvedPath.startsWith(workDir)) {
+      if (resolvedPath.startsWith(directory)) {
         try {
           const stats = await fs.stat(resolvedPath);
           if (stats.isFile()) {
