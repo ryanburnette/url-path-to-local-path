@@ -1,3 +1,5 @@
+'use strict';
+
 import fs from 'fs/promises';
 import path from 'path';
 import url from 'url';
@@ -13,6 +15,7 @@ const UrlPathToLocalPath = {};
  * @param {Object} opts - Options object.
  * @param {string} opts.directory - The working directory where files are located.
  * @param {string} opts.extension - The file extension to use (e.g., ".html").
+ * @param {boolean} [opts.ignoreDotfiles=true] - Whether to ignore dotfiles.
  * @returns {Function} A function that takes a URL path and resolves it to a local file path.
  * @throws {Error} If `opts.directory` or `opts.extension` are not provided.
  * @throws {PathNotFoundError} If no valid local path is found for the given URL path.
@@ -23,6 +26,7 @@ UrlPathToLocalPath.create = function (opts = {}) {
 
   const directory = path.resolve(opts.directory);
   const extension = opts.extension;
+  const ignoreDotfiles = opts.ignoreDotfiles !== false;
 
   return async function resolveUrlPathToLocalPath(urlPath) {
     urlPath = normalizeUrlPath(urlPath, extension);
@@ -37,7 +41,11 @@ UrlPathToLocalPath.create = function (opts = {}) {
       if (resolvedPath.startsWith(directory)) {
         try {
           const stats = await fs.stat(resolvedPath);
-          if (stats.isFile()) {
+          if (
+            stats.isFile() &&
+            resolvedPath.endsWith(extension) &&
+            (!ignoreDotfiles || !path.basename(resolvedPath).startsWith('.'))
+          ) {
             return resolvedPath;
           }
         } catch (err) {

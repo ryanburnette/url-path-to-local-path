@@ -42,4 +42,9 @@ describe('UrlPathToLocalPath', () => {
     const traversalPath = '../test.js';
     await expect(resolvePath(traversalPath)).rejects.toThrow('Local path not found');
   });
+
+  it('should throw PathNotFoundError for dotfile', async () => {
+    const testPath = '/baz';
+    await expect(resolvePath(testPath)).rejects.toThrow('Local path not found');
+  });
 });
